@@ -21,6 +21,7 @@ set(PROJECT_SOURCES
         bookcollection.h bookcollection.cpp
         dummyrecommender.h dummyrecommender.cpp
         collections/collection1.csv
+        collections/collection.csv
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

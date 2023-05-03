@@ -31,9 +31,9 @@ void BookCollection::clear()
     mBooks.clear();
 }
 
-
 void BookCollection::saveCollection(const QString &filePath)
 {
+    //https://cplusplus.com/doc/tutorial/files/
     std::ofstream file;
     file.open(filePath.toStdString());
     int bookCount = count();
@@ -49,20 +49,35 @@ void BookCollection::saveCollection(const QString &filePath)
 void BookCollection::loadCollection(const QString &filePath)
 {
     clear();
-    //https://www.udacity.com/blog/2021/05/how-to-read-from-a-file-in-cpp.html
+    //https://cplusplus.com/doc/tutorial/files/
     std::ifstream file;
     std::string line;
 
     file.open(filePath.toStdString());
     if(file.is_open()) {
         while(std::getline(file, line)){
-            std::istringstream ss(line);
-            std::vector<QString> tokens;
-            std::string token;
-            while(std::getline(ss, token, ',')){
-                tokens.push_back(QString::fromStdString(token));
+            std::string field;
+            std::ostringstream fieldStream;
+            std::vector<QString> fields;
+
+            bool inQuotes = false;
+
+            for (char c : line) {
+                if (c == '"') {
+                    inQuotes = !inQuotes;
+                } else if (c == ',' && !inQuotes) {
+                    field = fieldStream.str();
+                    fields.push_back(QString::fromStdString(field));
+                    fieldStream.str("");
+                    fieldStream.clear();
+                } else {
+                    fieldStream << c;
+                }
             }
-            Book book(tokens[0], tokens[1], tokens[2]);
+            field = fieldStream.str();
+            fields.push_back(QString::fromStdString(field));
+
+            Book book(fields[0], fields[1], fields[2]);
             addBook(book);
         }
         file.close();

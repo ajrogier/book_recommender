@@ -18,7 +18,22 @@ QString Book::review() const
     return mReview;
 }
 
+
+std::string escapeCSV(const std::string& input)
+{
+    std::string output = "\"";
+    for (const auto& ch : input) {
+        if (ch == '\"') {
+            output += "\"\"";
+        } else {
+            output += ch;
+        }
+    }
+    output += "\"";
+    return output;
+}
+
 std::ostream& operator<<(std::ostream& os, Book book)
 {
-    return os << book.title().toStdString() << "," << book.author().toStdString() << "," << book.review().toStdString();
+    return os << escapeCSV(book.title().toStdString()) << "," << escapeCSV(book.author().toStdString()) << "," << escapeCSV(book.review().toStdString());
 }
