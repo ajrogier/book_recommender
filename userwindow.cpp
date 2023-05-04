@@ -4,12 +4,28 @@
 #include "userwindow.h"
 #include "./ui_userwindow.h"
 #include "book.h"
+#include "bookcollection.h"
+#include "recommender.h"
 
 UserWindow::UserWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::UserWindow)
 {
     ui->setupUi(this);
+    QDir currentDir = QDir::currentPath();
+    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/suppliercollection1.csv");
+    mSupplierCollection.loadCollection(filePath);
+
+    ui->supplierCollectionTableWidget->setRowCount(0);
+    for(Book& supplierBook: mSupplierCollection.books()){
+        addBookToCollectionTableWidget(supplierBook, ui->supplierCollectionTableWidget);
+    }
+
+    ui->userCollectionTableWidget->horizontalHeader()->setStretchLastSection(true);
+    ui->recommendedCollectionTableWidget->horizontalHeader()->setStretchLastSection(true);
+    ui->supplierCollectionTableWidget->horizontalHeader()->setStretchLastSection(true);
+
+
 }
 
 UserWindow::~UserWindow()
@@ -17,13 +33,14 @@ UserWindow::~UserWindow()
     delete ui;
 }
 
-void  UserWindow::addBookToCollectionTableWidget_new(Book book){
-    int newRow = ui->collectionTableWidget->rowCount();
-    ui->collectionTableWidget->insertRow(newRow);
+void UserWindow::addBookToCollectionTableWidget(Book book, QTableWidget* collectionTableWidget)
+{
+    int newRow = collectionTableWidget->rowCount();
+    collectionTableWidget->insertRow(newRow);
 
-    ui->collectionTableWidget->setItem(newRow, 0, new QTableWidgetItem(book.title()));
-    ui->collectionTableWidget->setItem(newRow, 1, new QTableWidgetItem(book.author()));
-    ui->collectionTableWidget->setItem(newRow, 2, new QTableWidgetItem(book.review()));
+    collectionTableWidget->setItem(newRow, 0, new QTableWidgetItem(book.title()));
+    collectionTableWidget->setItem(newRow, 1, new QTableWidgetItem(book.author()));
+    collectionTableWidget->setItem(newRow, 2, new QTableWidgetItem(book.review()));
 }
 
 
@@ -34,30 +51,42 @@ void UserWindow::on_addBookPushButton_clicked()
     QString review = ui->reviewTextEdit->toPlainText();
 
     Book newBook(title, author, review);
-    mBookCollection.addBook(newBook);
+    mUserCollection.addBook(newBook);
 
-    addBookToCollectionTableWidget_new(newBook);
+    addBookToCollectionTableWidget(newBook,  ui->userCollectionTableWidget);
 }
 
 void UserWindow::on_saveCollectionPushButton_clicked()
 {
     QDir currentDir = QDir::currentPath();
-    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/collection1.csv");
-    mBookCollection.saveCollection(filePath);
+    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/usercollection1.csv");
+    mUserCollection.saveCollection(filePath);
 }
+
 
 void UserWindow::on_loadCollectionPushButton_clicked()
 {
     QDir currentDir = QDir::currentPath();
-    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/collection1.csv");
-    mBookCollection.loadCollection(filePath);
+    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/usercollection1.csv");
+    mUserCollection.loadCollection(filePath);
 
-    int bookCount = mBookCollection.count();
 
-    ui->collectionTableWidget->setRowCount(0);
-    for(int i=0; i<bookCount; ++i){
-        Book newBook = mBookCollection.bookAt(i);
-        addBookToCollectionTableWidget_new(newBook);
+    ui->userCollectionTableWidget->setRowCount(0);
+    for(Book& userBook: mUserCollection.books()){
+        qDebug() << "Adding to userCollection: " << userBook.title();
+        addBookToCollectionTableWidget(userBook, ui->userCollectionTableWidget);
+    }
+}
+
+
+void UserWindow::on_recommendPushButton_clicked()
+{
+    ui->recommendedCollectionTableWidget->setRowCount(0);
+
+    BookCollection recommendedCollection = mRecommender.recommend(mUserCollection, mSupplierCollection);
+    for(Book& recommendedBook: recommendedCollection.books()){
+        qDebug() << "Adding to recommendedCollection: " << recommendedBook.title();
+        addBookToCollectionTableWidget(recommendedBook, ui->recommendedCollectionTableWidget);
     }
 }
 

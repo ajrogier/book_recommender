@@ -2,7 +2,9 @@
 #define USERWINDOW_H
 
 #include <QMainWindow>
+#include <QTableWidget>
 #include "bookcollection.h"
+#include "recommender.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class UserWindow; }
@@ -17,12 +19,16 @@ public:
     ~UserWindow();
 
 private slots:
+    void addBookToCollectionTableWidget(Book, QTableWidget*);
     void on_addBookPushButton_clicked();
     void on_saveCollectionPushButton_clicked();
     void on_loadCollectionPushButton_clicked();
-    void addBookToCollectionTableWidget_new(Book);
+    void on_recommendPushButton_clicked();
+
 private:
     Ui::UserWindow *ui;
-    BookCollection mBookCollection;
+    BookCollection mUserCollection;
+    BookCollection mSupplierCollection;
+    Recommender mRecommender;
 };
 #endif // USERWINDOW_H

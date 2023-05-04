@@ -14,7 +14,6 @@ public:
     friend std::string escapeCSV(const std::string&);
     friend std::ostream& operator<<(std::ostream&, Book);
 private:
-    //https://www.geeksforgeeks.org/naming-convention-in-c/
     QString mTitle;
     QString mAuthor;
     QString mReview;

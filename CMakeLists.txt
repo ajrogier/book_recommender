@@ -20,7 +20,8 @@ set(PROJECT_SOURCES
         book.h book.cpp
         bookcollection.h bookcollection.cpp
         recommender.h recommender.cpp
-        collections/collection1.csv collections/collection.csv
+        collections/usercollection1.csv collections/usercollection.csv
+        collections/suppliercollection1.csv collections/suppliercollection.csv
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

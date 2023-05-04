@@ -5,7 +5,7 @@
 
 #include "bookcollection.h"
 
-QList<Book> BookCollection::books()
+QList<Book> BookCollection::books() const
 {
     return mBooks;
 }

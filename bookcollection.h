@@ -7,7 +7,7 @@
 class BookCollection
 {
 public:
-    QList<Book> books();
+    QList<Book> books() const;
     void addBook(const Book &book);
     int count() const;
     Book bookAt(int index) const;
