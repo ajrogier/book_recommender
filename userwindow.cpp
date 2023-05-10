@@ -12,10 +12,13 @@ UserWindow::UserWindow(QWidget *parent)
     , ui(new Ui::UserWindow)
 {
     ui->setupUi(this);
-    QDir currentDir = QDir::currentPath();
-    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/suppliercollection1.csv");
-    mSupplierCollection.loadCollection(filePath);
 
+    Recommender mRecommender = Recommender();
+
+    //Let's start with the supplierCollection already loaded in.
+    QString filePath = QString::fromStdString(std::string(CMAKE_BINARY_DIR) + "/collections/suppliercollection1.csv");
+    mSupplierCollection.loadCollection(filePath);
+    
     ui->supplierCollectionTableWidget->setRowCount(0);
     for(Book& supplierBook: mSupplierCollection.books()){
         addBookToCollectionTableWidget(supplierBook, ui->supplierCollectionTableWidget);
@@ -24,8 +27,6 @@ UserWindow::UserWindow(QWidget *parent)
     ui->userCollectionTableWidget->horizontalHeader()->setStretchLastSection(true);
     ui->recommendedCollectionTableWidget->horizontalHeader()->setStretchLastSection(true);
     ui->supplierCollectionTableWidget->horizontalHeader()->setStretchLastSection(true);
-
-
 }
 
 UserWindow::~UserWindow()
@@ -58,16 +59,14 @@ void UserWindow::on_addBookPushButton_clicked()
 
 void UserWindow::on_saveCollectionPushButton_clicked()
 {
-    QDir currentDir = QDir::currentPath();
-    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/usercollection1.csv");
+    QString filePath = QString::fromStdString(std::string(CMAKE_BINARY_DIR) + "/collections/usercollection1.csv");
     mUserCollection.saveCollection(filePath);
 }
 
 
 void UserWindow::on_loadCollectionPushButton_clicked()
 {
-    QDir currentDir = QDir::currentPath();
-    QString filePath = currentDir.absoluteFilePath("../../../../book_recommender/collections/usercollection1.csv");
+    QString filePath = QString::fromStdString(std::string(CMAKE_BINARY_DIR) + "/collections/usercollection1.csv");
     mUserCollection.loadCollection(filePath);
 
 

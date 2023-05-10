@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+set(WORD2VEC_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/word2vec++)
+
 set(PROJECT_SOURCES
         main.cpp
         userwindow.cpp
@@ -20,9 +22,36 @@ set(PROJECT_SOURCES
         book.h book.cpp
         bookcollection.h bookcollection.cpp
         recommender.h recommender.cpp
-        collections/usercollection1.csv collections/usercollection.csv
-        collections/suppliercollection1.csv collections/suppliercollection.csv
 )
+
+# Handle all collections files
+add_definitions(-DCMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}")
+set(COLLECTIONS_FILES_DIR "${CMAKE_SOURCE_DIR}/collections")
+set(OUTPUT_COLLECTIONS_FILES_DIR "${CMAKE_BINARY_DIR}/collections")
+set(COLLECTIONS_FILES
+        ${COLLECTIONS_FILES_DIR}/usercollection.csv
+        ${COLLECTIONS_FILES_DIR}/usercollection1.csv
+        ${COLLECTIONS_FILES_DIR}/suppliercollection.csv
+        ${COLLECTIONS_FILES_DIR}/suppliercollection1.csv
+)
+
+# Iterate through the data files and copy them to the output directory
+foreach(collections_file ${COLLECTIONS_FILES})
+  file(COPY ${collections_file} DESTINATION ${OUTPUT_COLLECTIONS_FILES_DIR})
+endforeach()
+
+set(EMBEDDINGS_FILES_DIR "${CMAKE_SOURCE_DIR}/embeddings")
+set(OUTPUT_EMBEDDINGS_FILES_DIR "${CMAKE_BINARY_DIR}/embeddings")
+set(EMBEDDINGS_FILES
+        ${EMBEDDINGS_FILES_DIR}/GoogleNews-vectors-negative300.bin
+
+)
+
+# Iterate through the data files and copy them to the output directory
+foreach(embeddings_file ${EMBEDDINGS_FILES})
+  file(COPY ${embeddings_file} DESTINATION ${OUTPUT_EMBEDDINGS_FILES_DIR})
+endforeach()
+
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(book_recommender
@@ -52,6 +81,9 @@ target_include_directories(book_recommender PRIVATE
 )
 
 target_link_libraries(book_recommender PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+add_subdirectory(${WORD2VEC_ROOT_DIR})
+target_link_libraries(book_recommender PUBLIC word2vec)
+
 
 set_target_properties(book_recommender PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
