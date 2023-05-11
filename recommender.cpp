@@ -1,4 +1,5 @@
 #include <iostream>
+#include <QDebug>
 #include "recommender.h"
 
 Recommender::Recommender():  mDoc2VecModel(0)
@@ -61,6 +62,7 @@ BookCollection Recommender::recommend(const BookCollection& userCollection, cons
 
     // Finally fill the recommendedCollection
     for (auto const &i: nearestSupplierBookIndices) {
+        qDebug() << "Adding to recommendedCollection: " << diffSupplierCollection.bookAt(i.first).title() << ", distance: "<< i.second;
         recommendedCollection.addBook(diffSupplierCollection.bookAt(i.first));
     }
     return recommendedCollection;
